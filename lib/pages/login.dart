@@ -1,5 +1,6 @@
 //import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'homepage.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({super.key});
@@ -11,9 +12,17 @@ class loginScreen extends StatefulWidget {
 class _loginScreenState extends State<loginScreen> {
 
   bool _obscurePassword = true;
+  
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
+    );
+  }
+
+  void _navigateToHomepage() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomePage()),
     );
   }
   @override
@@ -102,9 +111,7 @@ class _loginScreenState extends State<loginScreen> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    onPressed: () {
-                      _showSnackBar("Login button tapped!");
-                    },
+                    onPressed: _navigateToHomepage,
                     child: const Text(
                       "Login",
                       style: TextStyle(color: Colors.white,fontSize: 16, fontWeight: FontWeight.w600),
@@ -138,10 +145,7 @@ class _loginScreenState extends State<loginScreen> {
                       child: CircleAvatar(
                         radius: 24,
                         backgroundColor: Colors.grey.shade200,
-                        child: Image.network(
-                          "https://upload.wikimedia.org/wikipedia/commons/0/09/IOS_Google_icon.png",
-                          height: 28,
-                        ),
+                        child: const Icon(Icons.g_mobiledata, size: 28),
                       ),
                     ),
                     const SizedBox(width: 20),
