@@ -27,7 +27,7 @@ class _SettingsPageState extends State<SettingsPage> {
         title: Column(
           children: [
             Image.asset(
-              "assets/mfolks-logo.png", 
+              "assets/mfolks-logo.png",
               height: 30,
               errorBuilder: (context, error, stackTrace) {
                 return const Text(
@@ -65,60 +65,120 @@ class _SettingsPageState extends State<SettingsPage> {
           children: [
             // User Profile Card
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF00695C), Color(0xFF00897B)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.teal.withOpacity(0.3),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
               ),
               child: Row(
                 children: [
-                  const CircleAvatar(
-                    radius: 28,
-                    backgroundColor: Colors.black12,
-                    child: Icon(Icons.person, size: 35, color: Colors.black54),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.person, size: 35, color: Color(0xFF00695C)),
+                    ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("John Smith",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold)),
-                        Text("Loremipsum@email.com",
-                            style: TextStyle(color: Colors.black54)),
+                        Text(
+                          "John Smith",
+                          style: TextStyle(
+                            fontSize: 18, 
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "Loremipsum@email.com",
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      print('Edit button pressed - navigating to editProfile');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Navigating to Edit Profile...')),
+                      );
+                      Navigator.pushNamed(context, '/editProfile');
+                    },
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8))),
-                    child: const Text("Edit", style: TextStyle(color: Colors.white)),
+                      backgroundColor: Colors.white,
+                      foregroundColor: const Color(0xFF00695C),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 2,
+                    ),
+                    child: const Text(
+                      "Edit",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   )
                 ],
               ),
             ),
 
             const SizedBox(height: 24),
-            const Text("General",
-                style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              "General",
+              style: TextStyle(
+                fontSize: 20, 
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF00695C),
+              ),
+            ),
 
-            const SizedBox(height: 12),
-            
+            const SizedBox(height: 16),
+
             // Privacy Section
             _buildPrivacySection(),
-            
-            const SizedBox(height: 8),
-            
+
+            const SizedBox(height: 12),
+
             // Notifications toggle
             Container(
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.teal.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: SwitchListTile(
                 value: _notificationsEnabled,
@@ -127,19 +187,22 @@ class _SettingsPageState extends State<SettingsPage> {
                     _notificationsEnabled = val;
                   });
                 },
-                title: const Text("Notification"),
-                secondary: const Icon(Icons.notifications),
-                activeColor: Colors.teal,
+                title: const Text(
+                  "Notification",
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+                secondary: const Icon(Icons.notifications, color: Color(0xFF00695C)),
+                activeColor: const Color(0xFF00695C),
               ),
             ),
-            
-            const SizedBox(height: 8),
-            
+
+            const SizedBox(height: 12),
+
             // Accessibility Section
             _buildAccessibilitySection(),
-            
-            const SizedBox(height: 8),
-            
+
+            const SizedBox(height: 12),
+
             // Feedback Section
             _buildFeedbackSection(),
           ],
@@ -151,6 +214,26 @@ class _SettingsPageState extends State<SettingsPage> {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.teal,
         unselectedItemColor: Colors.black,
+        currentIndex: 2,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushNamed(context, '/about');
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/quote');
+              break;
+            case 2:
+              Navigator.pushNamed(context, '/home');
+              break;
+            case 3:
+              Navigator.pushNamed(context, '/analytics');
+              break;
+            case 4:
+              Navigator.pushNamed(context, '/calculator');
+              break;
+          }
+        },
         items: const [
           BottomNavigationBarItem(
               icon: Icon(Icons.info_outline), label: "About Us"),
@@ -166,16 +249,25 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-
   Widget _buildPrivacySection() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.teal.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ExpansionTile(
-        leading: const Icon(Icons.lock, color: Colors.teal),
-        title: const Text("Privacy", style: TextStyle(fontWeight: FontWeight.w600)),
+        leading: const Icon(Icons.lock, color: Color(0xFF00695C)),
+        title: const Text(
+          "Privacy",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         children: [
@@ -202,18 +294,17 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildPrivacyOption(String title, IconData icon) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      contentPadding:
+      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       title: Text(
         title,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        style:
+        const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       onTap: () {
-        // Handle navigation or action based on the option
         switch (title) {
           case "Reset Password":
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Reset Password functionality")),
-            );
+            Navigator.pushNamed(context, "/resetPassword");
             break;
           case "Permission Manager":
             ScaffoldMessenger.of(context).showSnackBar(
@@ -236,26 +327,53 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  // 🔹 Delete Account Dialog (MFOLKS style)
   void _showDeleteAccountDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("Delete Account"),
-          content: const Text("Are you sure you want to delete your account? This action cannot be undone."),
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          title: Column(
+            children: [
+              Image.asset(
+                "assets/mfolks-logo.png",
+                height: 50,
+              ),
+              const SizedBox(height: 10),
+              const Text(
+                "Are you sure you want to delete your Account permanently?",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
+          actionsAlignment: MainAxisAlignment.spaceEvenly,
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancel"),
-            ),
-            TextButton(
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Account deletion requested")),
+                  const SnackBar(content: Text("Account deleted permanently")),
                 );
+                Navigator.pushReplacementNamed(context, "/login");
               },
-              child: const Text("Delete", style: TextStyle(color: Colors.red)),
+              child: const Text("Confirm"),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Back"),
             ),
           ],
         );
@@ -263,11 +381,14 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  // 🔹 Logout Dialog
   void _showLogoutDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           title: const Text("Log Out"),
           content: const Text("Are you sure you want to log out?"),
           actions: [
@@ -275,12 +396,16 @@ class _SettingsPageState extends State<SettingsPage> {
               onPressed: () => Navigator.of(context).pop(),
               child: const Text("Cancel"),
             ),
-            TextButton(
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
               onPressed: () {
                 Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Logged out successfully")),
+                );
                 Navigator.pushReplacementNamed(context, '/login');
               },
-              child: const Text("Log Out", style: TextStyle(color: Colors.red)),
+              child: const Text("Log Out"),
             ),
           ],
         );
@@ -288,15 +413,26 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  // Accessibility section
   Widget _buildAccessibilitySection() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.teal.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ExpansionTile(
-        leading: const Icon(Icons.accessibility, color: Colors.teal),
-        title: const Text("Accessibility", style: TextStyle(fontWeight: FontWeight.w600)),
+        leading: const Icon(Icons.accessibility, color: Color(0xFF00695C)),
+        title: const Text(
+          "Accessibility",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         children: [
@@ -305,14 +441,17 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Font Size", style: TextStyle(fontWeight: FontWeight.w500)),
+                const Text(
+                  "Font Size",
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
                 Slider(
                   value: _fontSize,
                   min: 10,
                   max: 20,
                   divisions: 10,
                   label: _fontSize.round().toString(),
-                  activeColor: Colors.teal,
+                  activeColor: const Color(0xFF00695C),
                   onChanged: (val) {
                     setState(() {
                       _fontSize = val;
@@ -320,14 +459,17 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                 ),
                 const SizedBox(height: 12),
-                const Text("Button Size", style: TextStyle(fontWeight: FontWeight.w500)),
+                const Text(
+                  "Button Size",
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
                 Slider(
                   value: _buttonSize,
                   min: 12,
                   max: 24,
                   divisions: 12,
                   label: _buttonSize.round().toString(),
-                  activeColor: Colors.teal,
+                  activeColor: const Color(0xFF00695C),
                   onChanged: (val) {
                     setState(() {
                       _buttonSize = val;
@@ -338,7 +480,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 SwitchListTile(
                   title: const Text("Touch Feedback"),
                   value: _touchFeedback,
-                  activeColor: Colors.teal,
+                  activeColor: const Color(0xFF00695C),
                   onChanged: (val) {
                     setState(() {
                       _touchFeedback = val;
@@ -346,22 +488,33 @@ class _SettingsPageState extends State<SettingsPage> {
                   },
                 ),
                 const SizedBox(height: 8),
-                const Text("Language Preference", style: TextStyle(fontWeight: FontWeight.w500)),
+                const Text(
+                  "Language Preference",
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
                 const SizedBox(height: 8),
-                DropdownButtonFormField<String>(
-                  value: _languagePreference,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  ),
-                  items: ['English', 'Spanish', 'French', 'German', 'Hindi']
-                      .map((lang) => DropdownMenuItem(value: lang, child: Text(lang)))
-                      .toList(),
-                  onChanged: (val) {
-                    setState(() {
-                      _languagePreference = val!;
-                    });
+                InkWell(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/language');
                   },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.teal.withOpacity(0.3)),
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.grey.shade50,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _languagePreference,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                        const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF00695C)),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -371,15 +524,26 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  // Feedback section
   Widget _buildFeedbackSection() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey.shade50,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.teal.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: ExpansionTile(
-        leading: const Icon(Icons.feedback, color: Colors.teal),
-        title: const Text("Feedback", style: TextStyle(fontWeight: FontWeight.w600)),
+        leading: const Icon(Icons.feedback, color: Color(0xFF00695C)),
+        title: const Text(
+          "Feedback",
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         children: [
@@ -388,7 +552,10 @@ class _SettingsPageState extends State<SettingsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Rate us", style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16)),
+                const Text(
+                  "Rate us",
+                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+                ),
                 const SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -400,22 +567,37 @@ class _SettingsPageState extends State<SettingsPage> {
                         });
                       },
                       icon: Icon(
-                        index < _feedbackRating ? Icons.star : Icons.star_border,
-                        color: Colors.teal,
+                        index < _feedbackRating
+                            ? Icons.star
+                            : Icons.star_border,
+                        color: const Color(0xFF00695C),
                         size: 32,
                       ),
                     );
                   }),
                 ),
                 const SizedBox(height: 12),
-                const Text("How can we improve", style: TextStyle(fontWeight: FontWeight.w500)),
+                const Text(
+                  "How can we improve",
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
                 const SizedBox(height: 8),
                 TextFormField(
                   maxLines: 3,
                   decoration: InputDecoration(
                     hintText: "Share your feedback...",
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    hintStyle: TextStyle(color: Colors.grey.shade600),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: Colors.teal.withOpacity(0.3)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(color: Color(0xFF00695C), width: 2),
+                    ),
                     contentPadding: const EdgeInsets.all(12),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -424,15 +606,27 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: ElevatedButton(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Thank you for your feedback!")),
+                        const SnackBar(
+                          content: Text("Thank you for your feedback!"),
+                          backgroundColor: Color(0xFF00695C),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
+                      backgroundColor: const Color(0xFF00695C),
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 2,
                     ),
-                    child: const Text("Submit", style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      "Submit",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ],

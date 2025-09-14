@@ -99,8 +99,8 @@ class _CompanyInfoPageState extends State<CompanyInfoPage> {
 
       // ✅ Reusable Footer
       bottomNavigationBar: CustomFooter(
-        selectedIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
       ),
     );
   }
