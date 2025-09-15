@@ -69,7 +69,7 @@ class _MetalCalculatorPageState extends State<MetalCalculatorPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // App logo
-              Image.asset("assets/logo.png", height: 50),
+              Image.asset("'assets/mfolks-logo.png'", height: 50),
 
               const SizedBox(height: 20),
 

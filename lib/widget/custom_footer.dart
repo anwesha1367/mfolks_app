@@ -38,9 +38,9 @@ class CustomFooter extends StatelessWidget {
             label: "About Us",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.request_quote_outlined),
-            activeIcon: Icon(Icons.request_quote),
-            label: "Quote",
+            icon: Icon(Icons.feed_outlined),
+            activeIcon: Icon(Icons.feed_outlined),
+            label: "Feedback",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),

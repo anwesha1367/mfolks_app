@@ -9,6 +9,8 @@ import 'package:mfolks_app/pages/reset_password_page.dart';
 import 'package:mfolks_app/pages/language_page.dart';
 import'package:mfolks_app/pages/shippingAddressPage.dart';
 import 'package:mfolks_app/pages/metalCalculatorPage.dart';
+import 'package:mfolks_app/pages/notificationPage.dart';
+import 'package:mfolks_app/pages/contact_us_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -75,17 +77,19 @@ class MyApp extends StatelessWidget {
         '/about': (context) => const Scaffold(body: Center(child: Text("About Us Page"))),
         '/analytics': (context) => const Scaffold(body: Center(child: Text("Analytics Page"))),
         '/calculator': (context) => const MetalCalculatorPage(),
-        '/quote': (context) => const Scaffold(body: Center(child: Text("Quote Page"))),
+        '/quote': (context) => const FeedbackPage(),
         '/shipping': (context) => const ShippingAddressPage(),
         '/orders': (context) => const Scaffold(body: Center(child: Text("Order History Page"))),
         '/settings': (context) => const SettingsPage(),
         '/editProfile': (context) => const EditDetailsPage(),
-        '/test': (context) => const Scaffold(
-          body: Center(child: Text('Test Page')),
+        '/test': (context) => const Scaffold(body: Center(child: Text('Test Page')),
         ),
         '/resetPassword': (context) => const ResetPasswordPage(),
         '/language': (context) => const LanguagePage(),
         '/feedback': (context) => const FeedbackPage(),
+        '/notification':(context)=>const NotificationsPage(),
+        '/contact':(context)=>const ContactUsPage(),
+
       },
     );
   }
