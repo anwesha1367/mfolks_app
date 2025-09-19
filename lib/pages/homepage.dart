@@ -1,45 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product.dart';
+import '../utils/cloudinary.dart';
+import '../services/api_client.dart';
 import '../widget/custom_footer.dart';
 import '../widget/custom_drawer.dart';
+import '../state/user_notifier.dart';
+import '../models/user.dart';
+import '../components/product_card.dart';
+import '../components/app_header.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> {
   int _selectedIndex = 2; // Home selected
   late List<Product> products;
+  int? _addingId;
 
   @override
   void initState() {
     super.initState();
-    // Placeholder products until API is connected
-    products = [
-      Product(
-        name: "Ferrous Metals",
-        description: "Strongest structure known. Trusted for your trust.",
-        imageUrl: "https://via.placeholder.com/100x80.png?text=Ferrous",
-      ),
-      Product(
-        name: "Non Ferrous Metals",
-        description: "Light, strong, and versatile materials.",
-        imageUrl: "https://via.placeholder.com/100x80.png?text=Non+Ferrous",
-      ),
-      Product(
-        name: "Polymers",
-        description: "Durable & dynamic. Shaping the future.",
-        imageUrl: "https://via.placeholder.com/100x80.png?text=Polymers",
-      ),
-      Product(
-        name: "Other Products",
-        description: "Shoes, accessories & more.",
-        imageUrl: "https://via.placeholder.com/100x80.png?text=Others",
-      ),
-    ];
+    products = [];
+    _fetchProducts();
+  }
+
+  Future<void> _fetchProducts() async {
+    try {
+      final res = await ApiClient().get<List<dynamic>>('/products');
+      final list = (res.data ?? [])
+          .whereType<Map<String, dynamic>>()
+          .map((e) => Product.fromJson(e))
+          .toList();
+      if (mounted) {
+        setState(() {
+          products = list;
+        });
+      }
+    } catch (_) {
+      // Keep empty list on error; could show a snackbar
+    }
+  }
+
+  Future<void> _addToCart(Product product) async {
+    if (_addingId != null) return;
+    setState(() {
+      _addingId = product.id;
+    });
+    try {
+      await ApiClient().post('/carts/items', data: {
+        'product_id': product.id,
+        'quantity': 1,
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Added to cart')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to add to cart. Please login.')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _addingId = null;
+        });
+      }
+    }
   }
 
   void _onItemTapped(int index) {
@@ -68,49 +100,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final AppUser? user = ref.watch(userProvider);
+    final String displayName = (user?.fullname?.trim().isNotEmpty == true)
+        ? user!.fullname!.trim()
+        : 'MFolks Partner';
     return Scaffold(
       backgroundColor: const Color(0xFFF8FFFE),
       drawer: const CustomDrawer(),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE0F2F1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Image.asset("assets/mfolks-logo.png", height: 32),
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE0F2F1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: IconButton(
-              icon: const Icon(
-                Icons.notifications_none,
-                color: Color(0xFF00695C),
-              ),
-              onPressed: () {},
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE0F2F1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.person_outline, color: Color(0xFF00695C)),
-              onPressed: () {},
-            ),
-          ),
-        ],
-      ),
+      appBar: const AppHeader(),
       body: Column(
         children: [
           // Welcome Header
@@ -132,23 +129,23 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.waving_hand, color: Colors.white, size: 24),
-                SizedBox(width: 12),
+                const Icon(Icons.waving_hand, color: Colors.white, size: 24),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Welcome to MFolks",
-                        style: TextStyle(
+                        'Welcome${user?.fullname != null ? ', ${user!.fullname}' : ''}',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text(
+                      const Text(
                         "Explore the products",
                         style: TextStyle(color: Colors.white70, fontSize: 14),
                       ),
@@ -166,93 +163,11 @@ class _HomePageState extends State<HomePage> {
               itemCount: products.length,
               itemBuilder: (context, index) {
                 final product = products[index];
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.teal.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE0F2F1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.network(
-                              product.imageUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(
-                                  Icons.category,
-                                  color: Color(0xFF00695C),
-                                  size: 40,
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                product.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Color(0xFF00695C),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                product.description,
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        ElevatedButton(
-                          onPressed: () {
-                            // later connect product details
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF00695C),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                          ),
-                          child: const Text(
-                            "Explore",
-                            style: TextStyle(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                return ProductCard(
+                  product: product,
+                  onView: () => Navigator.pushNamed(context, '/product', arguments: product),
+                  onAddToCart: () => _addToCart(product),
+                  isAdding: _addingId == product.id,
                 );
               },
             ),

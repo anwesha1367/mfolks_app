@@ -1,6 +1,11 @@
 //import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'homepage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../services/auth_service.dart';
+import '../state/user_notifier.dart';
+import '../models/user.dart';
 
 class loginScreen extends StatefulWidget {
   const loginScreen({super.key});
@@ -10,20 +15,69 @@ class loginScreen extends StatefulWidget {
 }
 
 class _loginScreenState extends State<loginScreen> {
-
+  final TextEditingController _identifierController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  
+  bool _isLoading = false;
+
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
   }
 
-  void _navigateToHomepage() {
+  Future<void> _navigateToHomepage() async {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => const HomePage()),
     );
+  }
+
+  Future<void> _handleLogin() async {
+    final identifier = _identifierController.text.trim();
+    final password = _passwordController.text;
+
+    if (identifier.isEmpty || password.isEmpty) {
+      _showSnackBar('Please enter email/phone and password');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final user = await AuthService.instance.login(
+        identifier: identifier,
+        password: password,
+      );
+      // Save user in Riverpod state
+      if (!mounted) return;
+      final container = ProviderScope.containerOf(context, listen: false);
+      // Lazy import to avoid circulars
+      // ignore: avoid_dynamic_calls
+      container.read(userProvider.notifier).setUser(AppUser.fromJson(user));
+
+      // Token is saved inside AuthService. Optionally confirm here.
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token') ?? '';
+      if (token.isEmpty) {
+        _showSnackBar('Login failed: token missing');
+        return;
+      }
+
+      // Success
+      _showSnackBar('Login successful');
+      await _navigateToHomepage();
+    } catch (e) {
+      _showSnackBar('Login failed. Please check your credentials.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -100,6 +154,7 @@ class _loginScreenState extends State<loginScreen> {
 
                         // Email / Mobile field
                         TextField(
+                          controller: _identifierController,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF00695C)),
                             hintText: "Email or Mobile No.",
@@ -113,6 +168,7 @@ class _loginScreenState extends State<loginScreen> {
 
                         // Password field
                         TextField(
+                          controller: _passwordController,
                           obscureText: _obscurePassword,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF00695C)),
@@ -165,7 +221,7 @@ class _loginScreenState extends State<loginScreen> {
                               ),
                               elevation: 3,
                             ),
-                            onPressed: _navigateToHomepage,
+                            onPressed: _isLoading ? null : _handleLogin,
                             child: const Text(
                               "Login",
                               style: TextStyle(

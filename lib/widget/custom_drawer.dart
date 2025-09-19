@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../state/user_notifier.dart';
+import '../models/user.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends ConsumerWidget {
   const CustomDrawer({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final AppUser? user = ref.watch(userProvider);
+    final String displayName = user?.fullname?.trim().isNotEmpty == true ? user!.fullname!.trim() : 'Guest';
+    final String displayEmail = user?.email?.trim().isNotEmpty == true ? user!.email!.trim() : 'No email';
+
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -13,15 +21,20 @@ class CustomDrawer extends StatelessWidget {
       decoration: const BoxDecoration(
       color: Colors.teal,
       ),
-      currentAccountPicture: const CircleAvatar(
+      currentAccountPicture: CircleAvatar(
         backgroundColor: Colors.white,
-        child: Icon(Icons.person, size: 40, color: Colors.teal),
+        backgroundImage: (user?.profilePictureUrl != null && (user!.profilePictureUrl!.isNotEmpty))
+            ? NetworkImage(user.profilePictureUrl!)
+            : null,
+        child: (user?.profilePictureUrl == null || (user!.profilePictureUrl!.isEmpty))
+            ? const Icon(Icons.person, size: 40, color: Colors.teal)
+            : null,
       ),
-      accountName: const Text(
-        "John Smith",
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+      accountName: Text(
+        displayName,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
-      accountEmail: const Text("loremipsum@email.com"),
+      accountEmail: Text(displayEmail),
     ),
     ListTile(
     leading: const Icon(Icons.business),
@@ -69,7 +82,11 @@ class CustomDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.logout,color: Colors.red),
             title: const Text("Logout",style:TextStyle(color: Colors.red) ),
-            onTap: () {
+            onTap: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.remove('token');
+              await ref.read(userProvider.notifier).clear();
+              // ignore: use_build_context_synchronously
               Navigator.pushReplacementNamed(context, "/login");
             },
           ),

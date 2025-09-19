@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mfolks_app/pages/login.dart';
 import 'package:mfolks_app/pages/comp-info.dart';
 import 'package:mfolks_app/pages/homepage.dart';
+import 'package:mfolks_app/pages/product_details_page.dart';
+import 'package:mfolks_app/pages/cart_page.dart';
 import 'package:mfolks_app/pages/settings.dart';
 import 'package:mfolks_app/pages/feedback.dart';
 import 'package:mfolks_app/pages/EditDetailPage.dart';
@@ -13,7 +16,7 @@ import 'package:mfolks_app/pages/notificationPage.dart';
 import 'package:mfolks_app/pages/contact_us_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -74,6 +77,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const loginScreen(),
         '/companyInfo': (context) => const CompanyInfoPage(),
         '/home': (context) => const HomePage(),
+        '/product': (context) => const ProductDetailsPage(),
+        '/cart': (context) => const CartPage(),
         '/about': (context) => const Scaffold(body: Center(child: Text("About Us Page"))),
         '/analytics': (context) => const Scaffold(body: Center(child: Text("Analytics Page"))),
         '/calculator': (context) => const MetalCalculatorPage(),
