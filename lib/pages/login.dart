@@ -21,9 +21,9 @@ class _loginScreenState extends State<loginScreen> {
   bool _isLoading = false;
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _navigateToHomepage() async {
@@ -79,6 +79,7 @@ class _loginScreenState extends State<loginScreen> {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,11 +88,7 @@ class _loginScreenState extends State<loginScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFE0F2F1),
-              Colors.white,
-              Color(0xFFF1F8E9),
-            ],
+            colors: [Color(0xFFE0F2F1), Colors.white, Color(0xFFF1F8E9)],
             stops: [0.0, 0.6, 1.0],
           ),
         ),
@@ -145,7 +142,7 @@ class _loginScreenState extends State<loginScreen> {
                         const Text(
                           "Partner Login",
                           style: TextStyle(
-                            fontSize: 28, 
+                            fontSize: 28,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFF00695C),
                           ),
@@ -156,7 +153,10 @@ class _loginScreenState extends State<loginScreen> {
                         TextField(
                           controller: _identifierController,
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.person_outline, color: Color(0xFF00695C)),
+                            prefixIcon: const Icon(
+                              Icons.person_outline,
+                              color: Color(0xFF00695C),
+                            ),
                             hintText: "Email or Mobile No.",
                             hintStyle: TextStyle(color: Colors.grey.shade600),
                             border: OutlineInputBorder(
@@ -171,7 +171,10 @@ class _loginScreenState extends State<loginScreen> {
                           controller: _passwordController,
                           obscureText: _obscurePassword,
                           decoration: InputDecoration(
-                            prefixIcon: const Icon(Icons.lock_outline, color: Color(0xFF00695C)),
+                            prefixIcon: const Icon(
+                              Icons.lock_outline,
+                              color: Color(0xFF00695C),
+                            ),
                             hintText: "Password",
                             hintStyle: TextStyle(color: Colors.grey.shade600),
                             border: OutlineInputBorder(
@@ -179,7 +182,9 @@ class _loginScreenState extends State<loginScreen> {
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                                 color: const Color(0xFF00695C),
                               ),
                               onPressed: () {
@@ -226,7 +231,7 @@ class _loginScreenState extends State<loginScreen> {
                               "Login",
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18, 
+                                fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -305,7 +310,11 @@ class _loginScreenState extends State<loginScreen> {
                               ),
                             ],
                           ),
-                          child: const Icon(Icons.g_mobiledata, size: 28, color: Color(0xFF00695C)),
+                          child: const Icon(
+                            Icons.g_mobiledata,
+                            size: 28,
+                            color: Color(0xFF00695C),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 20),
@@ -326,7 +335,11 @@ class _loginScreenState extends State<loginScreen> {
                               ),
                             ],
                           ),
-                          child: const Icon(Icons.apple, size: 28, color: Color(0xFF00695C)),
+                          child: const Icon(
+                            Icons.apple,
+                            size: 28,
+                            color: Color(0xFF00695C),
+                          ),
                         ),
                       ),
                     ],
@@ -336,7 +349,10 @@ class _loginScreenState extends State<loginScreen> {
                   // Sign Up link
                   Center(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.8),
                         borderRadius: BorderRadius.circular(12),
@@ -354,7 +370,7 @@ class _loginScreenState extends State<loginScreen> {
                           ),
                           GestureDetector(
                             onTap: () {
-                              _showSnackBar("Sign Up tapped!");
+                              Navigator.of(context).pushNamed('/signup');
                             },
                             child: const Text(
                               "Sign Up",
@@ -364,7 +380,7 @@ class _loginScreenState extends State<loginScreen> {
                                 fontSize: 16,
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),

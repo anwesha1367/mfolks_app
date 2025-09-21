@@ -3,7 +3,7 @@ class EnvConfig {
 
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://192.168.1.3:5000/api',
+    defaultValue: 'https://backend-mfolks.onrender.com/api',
   );
 
   static const String cloudinaryCloudName = String.fromEnvironment(
