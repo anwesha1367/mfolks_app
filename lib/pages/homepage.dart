@@ -8,7 +8,7 @@ import '../widget/custom_drawer.dart';
 import '../state/user_notifier.dart';
 import '../models/user.dart';
 import '../components/product_card.dart';
-import '../components/app_header.dart';
+import '../widget/custom_header.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -18,7 +18,7 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  int _selectedIndex = 2; // Home selected
+  int _selectedIndex = 2;
   late List<Product> products;
   int? _addingId;
 
@@ -52,14 +52,14 @@ class _HomePageState extends ConsumerState<HomePage> {
       _addingId = product.id;
     });
     try {
-      await ApiClient().post('/carts/items', data: {
-        'product_id': product.id,
-        'quantity': 1,
-      });
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Added to cart')),
+      await ApiClient().post(
+        '/carts/items',
+        data: {'product_id': product.id, 'quantity': 1},
       );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Added to cart')));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -107,7 +107,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FFFE),
       drawer: const CustomDrawer(),
-      appBar: const AppHeader(),
+      appBar: const CustomHeader(isHome: true),
       body: Column(
         children: [
           // Welcome Header
@@ -165,7 +165,11 @@ class _HomePageState extends ConsumerState<HomePage> {
                 final product = products[index];
                 return ProductCard(
                   product: product,
-                  onView: () => Navigator.pushNamed(context, '/product', arguments: product),
+                  onView: () => Navigator.pushNamed(
+                    context,
+                    '/product',
+                    arguments: product,
+                  ),
                   onAddToCart: () => _addToCart(product),
                   isAdding: _addingId == product.id,
                 );

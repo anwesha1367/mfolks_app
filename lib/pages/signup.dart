@@ -3,6 +3,7 @@ import 'dart:io' show Platform; // For Apple sign-in platform check
 import 'package:mfolks_app/pages/homepage.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import '../widget/custom_header.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -47,13 +48,10 @@ class _SignupPageState extends State<SignupPage> {
 
   void _signup() {
     if (_formKey.currentState!.validate()) {
-
       _showSnackBar('Signup Successfully!');
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) => const HomePage(),
-        )
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
     }
   }
@@ -145,6 +143,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const CustomHeader(isHome: false),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(

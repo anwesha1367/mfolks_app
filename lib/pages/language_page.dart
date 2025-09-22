@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../widget/custom_header.dart';
 
 class LanguagePage extends StatefulWidget {
   const LanguagePage({super.key});
@@ -47,18 +48,15 @@ class _LanguagePageState extends State<LanguagePage> {
     setState(() {
       _selectedLang = code;
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Language set to: $code")),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("Language set to: $code")));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Choose Language"),
-        backgroundColor: Colors.teal,
-      ),
+      appBar: const CustomHeader(isHome: false),
       body: ListView.builder(
         itemCount: _indianLanguages.length,
         itemBuilder: (context, index) {

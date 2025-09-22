@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widget/custom_footer.dart';
 import '../widget/custom_drawer.dart';
+import '../widget/custom_header.dart';
 
 class ContactUsPage extends StatefulWidget {
   const ContactUsPage({super.key});
@@ -13,9 +14,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Contact Us"),
-      ),
+      appBar: const CustomHeader(isHome: false),
       drawer: const CustomDrawer(), // ✅ Drawer added
       body: SafeArea(
         child: Padding(
@@ -25,10 +24,7 @@ class _ContactUsPageState extends State<ContactUsPage> {
             children: [
               const Text(
                 "How can we help you?",
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
               const SizedBox(height: 16),
 
@@ -74,7 +70,6 @@ class _ContactUsPageState extends State<ContactUsPage> {
         ),
       ),
 
-
       bottomNavigationBar: CustomFooter(
         currentIndex: 0, // You can keep About Us highlighted or set -1 for none
         onTap: (index) {
@@ -107,22 +102,19 @@ class _ContactUsPageState extends State<ContactUsPage> {
   }) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ExpansionTile(
         leading: Icon(icon, color: Colors.teal),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.w600),
-        ),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600)),
         children: details
-            .map((detail) => ListTile(
-          title: Text(detail),
-          onTap: () {
-            // Later: launch URL or dial number
-          },
-        ))
+            .map(
+              (detail) => ListTile(
+                title: Text(detail),
+                onTap: () {
+                  // Later: launch URL or dial number
+                },
+              ),
+            )
             .toList(),
       ),
     );

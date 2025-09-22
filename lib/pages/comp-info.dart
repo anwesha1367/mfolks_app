@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mfolks_app/widget/custom_footer.dart';
+import 'package:mfolks_app/widget/custom_header.dart';
 
 class CompanyInfoPage extends StatefulWidget {
   const CompanyInfoPage({super.key});
@@ -15,7 +16,6 @@ class _CompanyInfoPageState extends State<CompanyInfoPage> {
     setState(() {
       _selectedIndex = index;
     });
-
 
     switch (index) {
       case 0:
@@ -39,18 +39,7 @@ class _CompanyInfoPageState extends State<CompanyInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Image.asset("assets/mfolks-logo.png", height: 40),
-        actions: const [
-          Icon(Icons.notifications_none, color: Colors.black),
-          SizedBox(width: 10),
-          Icon(Icons.person_outline, color: Colors.black),
-          SizedBox(width: 10),
-        ],
-      ),
+      appBar: const CustomHeader(isHome: false),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -76,8 +65,10 @@ class _CompanyInfoPageState extends State<CompanyInfoPage> {
               alignment: Alignment.centerRight,
               child: TextButton(
                 onPressed: () {},
-                child: const Text("Upload GST Details",
-                    style: TextStyle(color: Colors.teal)),
+                child: const Text(
+                  "Upload GST Details",
+                  style: TextStyle(color: Colors.teal),
+                ),
               ),
             ),
 
@@ -113,9 +104,7 @@ class _CompanyInfoPageState extends State<CompanyInfoPage> {
         initialValue: initialValue,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
     );

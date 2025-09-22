@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widget/custom_footer.dart';
+import '../widget/custom_header.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
@@ -14,37 +15,17 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const CustomHeader(isHome: false),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Top row (bell, logo, profile)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Icon(Icons.notifications_none, size: 24),
-                  Text(
-                    "Mfolks",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.teal.shade700, // same palette
-                    ),
-                  ),
-                  const Icon(Icons.person_outline, size: 24),
-                ],
-              ),
-              const SizedBox(height: 16),
-
               // Heading
               const Text(
                 "Notifications",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 12),
 
@@ -74,28 +55,28 @@ class _NotificationsPageState extends State<NotificationsPage> {
       ),
 
       // Bottom Navigation
-      bottomNavigationBar:CustomFooter(
-      currentIndex: 3, // Analytics tab
-      onTap: (index) {
-        switch (index) {
-          case 0:
-            Navigator.pushNamed(context, '/about');
-            break;
-          case 1:
-            Navigator.pushNamed(context, '/feedback');
-            break;
-          case 2:
-            Navigator.pushNamed(context, '/home');
-            break;
-          case 3:
-            Navigator.pushNamed(context, '/analytics');
-            break;
-          case 4:
-            Navigator.pushNamed(context, '/calculator');
-            break;
-        }
-      },
-      )
+      bottomNavigationBar: CustomFooter(
+        currentIndex: 3, // Analytics tab
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushNamed(context, '/about');
+              break;
+            case 1:
+              Navigator.pushNamed(context, '/feedback');
+              break;
+            case 2:
+              Navigator.pushNamed(context, '/home');
+              break;
+            case 3:
+              Navigator.pushNamed(context, '/analytics');
+              break;
+            case 4:
+              Navigator.pushNamed(context, '/calculator');
+              break;
+          }
+        },
+      ),
     );
   }
 
@@ -126,9 +107,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Widget _buildNotificationCard(int index) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: const Icon(Icons.message_outlined, color: Colors.teal),
         title: const Text("Notification"),

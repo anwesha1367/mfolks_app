@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widget/custom_header.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -19,44 +20,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        title: Column(
-          children: [
-            Image.asset(
-              "assets/mfolks-logo.png",
-              height: 30,
-              errorBuilder: (context, error, stackTrace) {
-                return const Text(
-                  "MFOLKS",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.teal,
-                  ),
-                );
-              },
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              "Settings",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-          ],
-        ),
-        actions: const [
-          Icon(Icons.person, color: Colors.black),
-          SizedBox(width: 12),
-        ],
-        leading: const Icon(Icons.notifications_none, color: Colors.black),
-      ),
+      appBar: const CustomHeader(isHome: false),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -98,7 +62,11 @@ class _SettingsPageState extends State<SettingsPage> {
                     child: const CircleAvatar(
                       radius: 30,
                       backgroundColor: Colors.white,
-                      child: Icon(Icons.person, size: 35, color: Color(0xFF00695C)),
+                      child: Icon(
+                        Icons.person,
+                        size: 35,
+                        color: Color(0xFF00695C),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -109,7 +77,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         Text(
                           "John Smith",
                           style: TextStyle(
-                            fontSize: 18, 
+                            fontSize: 18,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -117,10 +85,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         SizedBox(height: 4),
                         Text(
                           "Loremipsum@email.com",
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                       ],
                     ),
@@ -129,7 +94,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     onPressed: () {
                       print('Edit button pressed - navigating to editProfile');
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Navigating to Edit Profile...')),
+                        const SnackBar(
+                          content: Text('Navigating to Edit Profile...'),
+                        ),
                       );
                       Navigator.pushNamed(context, '/editProfile');
                     },
@@ -145,7 +112,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       "Edit",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
@@ -154,7 +121,7 @@ class _SettingsPageState extends State<SettingsPage> {
             const Text(
               "General",
               style: TextStyle(
-                fontSize: 20, 
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF00695C),
               ),
@@ -191,7 +158,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   "Notification",
                   style: TextStyle(fontWeight: FontWeight.w600),
                 ),
-                secondary: const Icon(Icons.notifications, color: Color(0xFF00695C)),
+                secondary: const Icon(
+                  Icons.notifications,
+                  color: Color(0xFF00695C),
+                ),
                 activeColor: const Color(0xFF00695C),
               ),
             ),
@@ -236,14 +206,22 @@ class _SettingsPageState extends State<SettingsPage> {
         },
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.info_outline), label: "About Us"),
+            icon: Icon(Icons.info_outline),
+            label: "About Us",
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.request_quote_outlined), label: "Quote"),
+            icon: Icon(Icons.feed_outlined),
+            label: "Feedback",
+          ),
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.analytics_outlined), label: "Analytics"),
+            icon: Icon(Icons.analytics_outlined),
+            label: "Analytics",
+          ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.calculate_outlined), label: "Calculator"),
+            icon: Icon(Icons.calculate_outlined),
+            label: "Calculator",
+          ),
         ],
       ),
     );
@@ -269,7 +247,9 @@ class _SettingsPageState extends State<SettingsPage> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -277,7 +257,10 @@ class _SettingsPageState extends State<SettingsPage> {
               children: [
                 _buildPrivacyOption("Reset Password", Icons.lock_reset),
                 const Divider(height: 1),
-                _buildPrivacyOption("Permission Manager", Icons.admin_panel_settings),
+                _buildPrivacyOption(
+                  "Permission Manager",
+                  Icons.admin_panel_settings,
+                ),
                 const Divider(height: 1),
                 _buildPrivacyOption("Delete My Account", Icons.delete_forever),
                 const Divider(height: 1),
@@ -294,12 +277,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildPrivacyOption(String title, IconData icon) {
     return ListTile(
-      contentPadding:
-      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       title: Text(
         title,
-        style:
-        const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       ),
       onTap: () {
         switch (title) {
@@ -333,14 +314,12 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           title: Column(
             children: [
-              Image.asset(
-                "assets/mfolks-logo.png",
-                height: 50,
-              ),
+              Image.asset("assets/mfolks-logo-1.png", height: 35),
               const SizedBox(height: 10),
               const Text(
                 "Are you sure you want to delete your Account permanently?",
@@ -355,7 +334,8 @@ class _SettingsPageState extends State<SettingsPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               onPressed: () {
                 Navigator.pop(context);
@@ -370,7 +350,8 @@ class _SettingsPageState extends State<SettingsPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
               onPressed: () => Navigator.pop(context),
               child: const Text("Back"),
@@ -387,8 +368,9 @@ class _SettingsPageState extends State<SettingsPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           title: const Text("Log Out"),
           content: const Text("Are you sure you want to log out?"),
           actions: [
@@ -397,7 +379,7 @@ class _SettingsPageState extends State<SettingsPage> {
               child: const Text("Cancel"),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.teal),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               onPressed: () {
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -405,7 +387,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 );
                 Navigator.pushReplacementNamed(context, '/login');
               },
-              child: const Text("Log Out"),
+              child: const Text("Confirm"),
             ),
           ],
         );
@@ -434,7 +416,9 @@ class _SettingsPageState extends State<SettingsPage> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -498,7 +482,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     Navigator.pushNamed(context, '/language');
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.teal.withOpacity(0.3)),
                       borderRadius: BorderRadius.circular(8),
@@ -511,7 +498,11 @@ class _SettingsPageState extends State<SettingsPage> {
                           _languagePreference,
                           style: const TextStyle(fontSize: 16),
                         ),
-                        const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF00695C)),
+                        const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: Color(0xFF00695C),
+                        ),
                       ],
                     ),
                   ),
@@ -545,7 +536,9 @@ class _SettingsPageState extends State<SettingsPage> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        collapsedShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        collapsedShape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         children: [
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -589,11 +582,16 @@ class _SettingsPageState extends State<SettingsPage> {
                     hintStyle: TextStyle(color: Colors.grey.shade600),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.teal.withOpacity(0.3)),
+                      borderSide: BorderSide(
+                        color: Colors.teal.withOpacity(0.3),
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: Color(0xFF00695C), width: 2),
+                      borderSide: const BorderSide(
+                        color: Color(0xFF00695C),
+                        width: 2,
+                      ),
                     ),
                     contentPadding: const EdgeInsets.all(12),
                     filled: true,

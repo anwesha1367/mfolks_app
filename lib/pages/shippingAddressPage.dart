@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widget/custom_header.dart';
 
 class ShippingAddressPage extends StatefulWidget {
   const ShippingAddressPage({super.key});
@@ -14,8 +15,8 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
       "address": "216 St Paul's Rd,",
       "city": "London",
       "state": "N1 2LL",
-      "country": "United Kingdom"
-    }
+      "country": "United Kingdom",
+    },
   ];
 
   void addNewAddress() {
@@ -25,7 +26,7 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
         "address": "",
         "city": "",
         "state": "",
-        "country": ""
+        "country": "",
       });
     });
   }
@@ -33,18 +34,16 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Shipping Address"),
-        centerTitle: true,
-      ),
+      appBar: const CustomHeader(isHome: false),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              for (int i = 0; i < addresses.length; i++)
-                addressForm(i),
+              const SizedBox(height: 10),
+              for (int i = 0; i < addresses.length; i++) addressForm(i),
 
+              //const SizedBox(height: 15),
               const SizedBox(height: 20),
 
               ElevatedButton(
@@ -62,26 +61,22 @@ class _ShippingAddressPageState extends State<ShippingAddressPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Address ${index + 1}",
-            style: const TextStyle(fontWeight: FontWeight.bold)),
+        Text(
+          "Address ${index + 1}",
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
 
         const SizedBox(height: 10),
 
-        TextFormField(
-          decoration: const InputDecoration(labelText: "Pincode"),
-        ),
-        TextFormField(
-          decoration: const InputDecoration(labelText: "Address"),
-        ),
-        TextFormField(
-          decoration: const InputDecoration(labelText: "City"),
-        ),
-        TextFormField(
-          decoration: const InputDecoration(labelText: "State"),
-        ),
-        TextFormField(
-          decoration: const InputDecoration(labelText: "Country"),
-        ),
+        TextFormField(decoration: const InputDecoration(labelText: "Pincode")),
+        const SizedBox(height: 15),
+        TextFormField(decoration: const InputDecoration(labelText: "Address")),
+        const SizedBox(height: 15),
+        TextFormField(decoration: const InputDecoration(labelText: "City")),
+        const SizedBox(height: 15),
+        TextFormField(decoration: const InputDecoration(labelText: "State")),
+        const SizedBox(height: 15),
+        TextFormField(decoration: const InputDecoration(labelText: "Country")),
 
         const SizedBox(height: 20),
       ],

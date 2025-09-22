@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widget/custom_footer.dart'; // ✅ Import reusable footer
+import '../widget/custom_header.dart';
 
 class EditDetailsPage extends StatefulWidget {
   const EditDetailsPage({super.key});
@@ -9,12 +10,15 @@ class EditDetailsPage extends StatefulWidget {
 }
 
 class _EditDetailsPageState extends State<EditDetailsPage> {
-  final TextEditingController _nameController =
-  TextEditingController(text: "John Smith");
-  final TextEditingController _emailController =
-  TextEditingController(text: "johnsmith@gmail.com");
-  final TextEditingController _mobileController =
-  TextEditingController(text: "XXXXXXXX89");
+  final TextEditingController _nameController = TextEditingController(
+    text: "John Smith",
+  );
+  final TextEditingController _emailController = TextEditingController(
+    text: "johnsmith@gmail.com",
+  );
+  final TextEditingController _mobileController = TextEditingController(
+    text: "XXXXXXXX89",
+  );
 
   String? _selectedIndustry;
   int _selectedIndex = 2; // Default selected index (Home)
@@ -24,17 +28,7 @@ class _EditDetailsPageState extends State<EditDetailsPage> {
     return Scaffold(
       backgroundColor: Colors.white,
 
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        automaticallyImplyLeading: true,
-        centerTitle: true,
-        title: const Text(
-          "Edit Details",
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
-        ),
-      ),
+      appBar: const CustomHeader(isHome: false),
 
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -103,7 +97,9 @@ class _EditDetailsPageState extends State<EditDetailsPage> {
               items: const [
                 DropdownMenuItem(value: "IT", child: Text("IT")),
                 DropdownMenuItem(
-                    value: "Manufacturing", child: Text("Manufacturing")),
+                  value: "Manufacturing",
+                  child: Text("Manufacturing"),
+                ),
                 DropdownMenuItem(value: "Finance", child: Text("Finance")),
               ],
               onChanged: (val) {
@@ -123,12 +119,18 @@ class _EditDetailsPageState extends State<EditDetailsPage> {
                   // Save details action here
                 },
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8))),
+                  backgroundColor: Colors.teal,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
                 child: const Text(
                   "Edit",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color:Colors.white),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),

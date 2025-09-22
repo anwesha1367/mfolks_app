@@ -115,7 +115,7 @@ class _loginScreenState extends State<loginScreen> {
                         ],
                       ),
                       child: Image.asset(
-                        'assets/mfolks-logo.png',
+                        'assets/mfolks-logo-1.png',
                         width: 160,
                         height: 160,
                         fit: BoxFit.contain,

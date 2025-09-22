@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../utils/cloudinary.dart';
 import '../services/api_client.dart';
+import '../widget/custom_header.dart';
 
 class ProductDetailsPage extends StatefulWidget {
   const ProductDetailsPage({super.key});
@@ -56,19 +57,21 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       adding = true;
     });
     try {
-      await ApiClient().post('/carts/items', data: {
-        'product_id': product!.id,
-        'quantity': quantity,
-      });
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Added to cart')),
+      await ApiClient().post(
+        '/carts/items',
+        data: {'product_id': product!.id, 'quantity': quantity},
       );
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Added to cart')));
       Navigator.pushNamed(context, '/cart');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to add to cart. Please try again.')),
+        const SnackBar(
+          content: Text('Failed to add to cart. Please try again.'),
+        ),
       );
     } finally {
       if (mounted) {
@@ -82,14 +85,12 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
   @override
   Widget build(BuildContext context) {
     if (loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (product == null) {
       return Scaffold(
-        appBar: AppBar(),
+        appBar: const CustomHeader(isHome: false),
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -97,7 +98,8 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
               const Text('Product not found'),
               const SizedBox(height: 12),
               OutlinedButton(
-                onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, '/home'),
                 child: const Text('Back to Products'),
               ),
             ],
@@ -107,9 +109,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(product!.name),
-      ),
+      appBar: const CustomHeader(isHome: false),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -129,7 +129,11 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
             const SizedBox(height: 16),
             Text(
               product!.name,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF00695C)),
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF00695C),
+              ),
             ),
             const SizedBox(height: 8),
             Text(product!.description),
@@ -170,34 +174,49 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Quantity', style: TextStyle(fontWeight: FontWeight.w600)),
+                      const Text(
+                        'Quantity',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
                       Row(
                         children: [
                           IconButton(
-                            onPressed: quantity > 1 ? () => setState(() => quantity -= 1) : null,
+                            onPressed: quantity > 1
+                                ? () => setState(() => quantity -= 1)
+                                : null,
                             icon: const Icon(Icons.remove_circle_outline),
                           ),
-                          Text(quantity.toString(), style: const TextStyle(fontWeight: FontWeight.bold)),
+                          Text(
+                            quantity.toString(),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           IconButton(
-                            onPressed: product!.isInStock && quantity < product!.totalStock
+                            onPressed:
+                                product!.isInStock &&
+                                    quantity < product!.totalStock
                                 ? () => setState(() => quantity += 1)
                                 : null,
                             icon: const Icon(Icons.add_circle_outline),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: product!.isInStock ? (adding ? null : _addToCart) : null,
+                      onPressed: product!.isInStock
+                          ? (adding ? null : _addToCart)
+                          : null,
                       child: adding
                           ? const SizedBox(
                               width: 18,
                               height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             )
                           : const Text('Add to Cart'),
                     ),
@@ -211,5 +230,3 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     );
   }
 }
-
-

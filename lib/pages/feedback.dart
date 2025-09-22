@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widget/custom_footer.dart';
+import '../widget/custom_header.dart';
 
 class FeedbackPage extends StatefulWidget {
   const FeedbackPage({super.key});
@@ -42,7 +43,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
       barrierDismissible: false,
       builder: (context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
@@ -66,26 +69,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
                     alignment: Alignment.center,
                     children: [
                       // subtle bubbles
-                      Positioned(
-                        top: 8,
-                        left: 18,
-                        child: _bubble(8),
-                      ),
-                      Positioned(
-                        top: 24,
-                        right: 14,
-                        child: _bubble(10),
-                      ),
-                      Positioned(
-                        bottom: 18,
-                        left: 26,
-                        child: _bubble(6),
-                      ),
-                      Positioned(
-                        bottom: 8,
-                        right: 24,
-                        child: _bubble(7),
-                      ),
+                      Positioned(top: 8, left: 18, child: _bubble(8)),
+                      Positioned(top: 24, right: 14, child: _bubble(10)),
+                      Positioned(bottom: 18, left: 26, child: _bubble(6)),
+                      Positioned(bottom: 8, right: 24, child: _bubble(7)),
                       // badge
                       Container(
                         height: 72,
@@ -101,7 +88,11 @@ class _FeedbackPageState extends State<FeedbackPage> {
                             ),
                           ],
                         ),
-                        child: const Icon(Icons.check, color: Colors.white, size: 36),
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 36,
+                        ),
                       ),
                     ],
                   ),
@@ -149,56 +140,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FFFE),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        title: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE0F2F1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Image.asset('assets/mfolks-logo.png', height: 22),
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Feedback',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF00695C),
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFFE0F2F1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.person_outline, color: Color(0xFF00695C)),
-              onPressed: () {},
-            ),
-          ),
-        ],
-        leading: Container(
-          margin: const EdgeInsets.only(left: 8),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE0F2F1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.notifications_none, color: Color(0xFF00695C)),
-            onPressed: () {},
-          ),
-        ),
-      ),
+      appBar: const CustomHeader(isHome: false),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -248,7 +190,10 @@ class _FeedbackPageState extends State<FeedbackPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: Color(0xFF00695C), width: 2),
+                  borderSide: const BorderSide(
+                    color: Color(0xFF00695C),
+                    width: 2,
+                  ),
                 ),
                 contentPadding: const EdgeInsets.all(12),
                 filled: true,
@@ -290,4 +235,3 @@ class _FeedbackPageState extends State<FeedbackPage> {
     );
   }
 }
-

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widget/custom_header.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
@@ -10,7 +11,8 @@ class ResetPasswordPage extends StatefulWidget {
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final TextEditingController oldPasswordController = TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   bool _obscureOld = true;
   bool _obscureNew = true;
@@ -23,9 +25,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     String confirmPass = confirmPasswordController.text.trim();
 
     if (newPass.isEmpty || confirmPass.isEmpty || oldPass.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill all fields")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please fill all fields")));
       return;
     }
 
@@ -61,7 +63,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 "Back to Home",
                 style: TextStyle(color: Colors.teal),
               ),
-            )
+            ),
           ],
         ),
       ),
@@ -85,7 +87,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
           onPressed: toggleVisibility,
         ),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-        contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 15,
+          horizontal: 10,
+        ),
       ),
     );
   }
@@ -93,12 +98,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Reset Password"),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
+      appBar: const CustomHeader(isHome: false),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -107,9 +107,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             const SizedBox(height: 20),
             Text(
               "Reset Password",
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 25),
             _buildPasswordField(
@@ -118,7 +118,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               obscureText: _obscureOld,
               toggleVisibility: () {
                 setState(() {
-                  
                   _obscureOld = !_obscureOld;
                 });
               },
@@ -154,11 +153,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   backgroundColor: Colors.teal,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
                 child: const Text(
                   "Continue",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color:Colors.white),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
@@ -170,7 +174,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 },
                 child: const Text("Forgot Password?"),
               ),
-            )
+            ),
           ],
         ),
       ),
