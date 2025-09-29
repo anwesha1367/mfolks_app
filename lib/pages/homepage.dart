@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product.dart';
-import '../utils/cloudinary.dart';
 import '../services/api_client.dart';
-import '../widget/custom_footer.dart';
+import '../components/app_scaffold.dart';
 import '../widget/custom_drawer.dart';
 import '../state/user_notifier.dart';
 import '../models/user.dart';
 import '../components/product_card.dart';
-import '../widget/custom_header.dart';
+import '../state/products_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -19,31 +18,13 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   int _selectedIndex = 2;
-  late List<Product> products;
   int? _addingId;
 
   @override
   void initState() {
     super.initState();
-    products = [];
-    _fetchProducts();
-  }
-
-  Future<void> _fetchProducts() async {
-    try {
-      final res = await ApiClient().get<List<dynamic>>('/products');
-      final list = (res.data ?? [])
-          .whereType<Map<String, dynamic>>()
-          .map((e) => Product.fromJson(e))
-          .toList();
-      if (mounted) {
-        setState(() {
-          products = list;
-        });
-      }
-    } catch (_) {
-      // Keep empty list on error; could show a snackbar
-    }
+    // products cached via productsProvider; trigger load only if needed
+    Future.microtask(() => ref.read(productsProvider.notifier).loadIfNeeded());
   }
 
   Future<void> _addToCart(Product product) async {
@@ -74,40 +55,15 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, "/about");
-        break;
-      case 1:
-        Navigator.pushNamed(context, "/quote");
-        break;
-      case 2:
-        Navigator.pushNamed(context, "/home");
-        break;
-      case 3:
-        Navigator.pushNamed(context, "/analytics");
-        break;
-      case 4:
-        Navigator.pushNamed(context, "/calculator");
-        break;
-    }
-  }
+  // Navigation handled by AppScaffold; we only keep selected index for highlighting
 
   @override
   Widget build(BuildContext context) {
     final AppUser? user = ref.watch(userProvider);
-    final String displayName = (user?.fullname?.trim().isNotEmpty == true)
-        ? user!.fullname!.trim()
-        : 'MFolks Partner';
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FFFE),
+    return AppScaffold(
+      isHomeHeader: true,
+      currentIndex: _selectedIndex,
       drawer: const CustomDrawer(),
-      appBar: const CustomHeader(isHome: true),
       body: Column(
         children: [
           // Welcome Header
@@ -158,29 +114,35 @@ class _HomePageState extends ConsumerState<HomePage> {
 
           // Products List
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: products.length,
-              itemBuilder: (context, index) {
-                final product = products[index];
-                return ProductCard(
-                  product: product,
-                  onView: () => Navigator.pushNamed(
-                    context,
-                    '/product',
-                    arguments: product,
-                  ),
-                  onAddToCart: () => _addToCart(product),
-                  isAdding: _addingId == product.id,
-                );
-              },
-            ),
+            child: Consumer(builder: (context, ref, _) {
+              final state = ref.watch(productsProvider);
+              final products = state.products;
+              if (!state.loaded && products.isEmpty) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (products.isEmpty) {
+                return const Center(child: Text('No products available'));
+              }
+              return ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: products.length,
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  return ProductCard(
+                    product: product,
+                    onView: () => Navigator.pushNamed(
+                      context,
+                      '/product',
+                      arguments: product,
+                    ),
+                    onAddToCart: () => _addToCart(product),
+                    isAdding: _addingId == product.id,
+                  );
+                },
+              );
+            }),
           ),
         ],
-      ),
-      bottomNavigationBar: CustomFooter(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
       ),
     );
   }

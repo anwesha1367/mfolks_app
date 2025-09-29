@@ -23,15 +23,27 @@ class CustomFooter extends StatelessWidget {
           ),
         ],
       ),
-      child: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: currentIndex,
-        selectedItemColor: const Color(0xFF00695C),
-        unselectedItemColor: Colors.grey.shade600,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        onTap: onTap,
-        items: const [
+      child: SafeArea(
+        top: false,
+        left: false,
+        right: false,
+        minimum: const EdgeInsets.only(bottom: 6),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: currentIndex,
+          selectedItemColor: const Color(0xFF00695C),
+          unselectedItemColor: Colors.grey.shade600,
+          selectedIconTheme: const IconThemeData(size: 22),
+          unselectedIconTheme: const IconThemeData(size: 22),
+          selectedFontSize: 12,
+          unselectedFontSize: 12,
+          selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, height: 1.0),
+          unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, height: 1.0),
+          showUnselectedLabels: true,
+          backgroundColor: Colors.white,
+          elevation: 0,
+          onTap: onTap,
+          items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.info_outline),
             activeIcon: Icon(Icons.info),
@@ -57,7 +69,8 @@ class CustomFooter extends StatelessWidget {
             activeIcon: Icon(Icons.calculate),
             label: "Calculator",
           ),
-        ],
+          ],
+        ),
       ),
     );
   }

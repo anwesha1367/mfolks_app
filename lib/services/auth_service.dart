@@ -45,6 +45,54 @@ class AuthService {
       type: DioExceptionType.badResponse,
     );
   }
+
+  Future<bool> sendForgotPasswordOTP({
+    required String identifier,
+    required String method,
+  }) async {
+    final Dio dio = ApiClient().dio;
+    final Response response = await dio.post('/auth/forgot-password/send-otp', data: {
+      'identifier': identifier,
+      'method': method,
+    });
+
+    final data = response.data;
+    return data is Map && data['success'] == true;
+  }
+
+  Future<bool> verifyForgotPasswordOTP({
+    required String identifier,
+    required String otp,
+    required String method,
+  }) async {
+    final Dio dio = ApiClient().dio;
+    final Response response = await dio.post('/auth/forgot-password/verify-otp', data: {
+      'identifier': identifier,
+      'otp': otp,
+      'method': method,
+    });
+
+    final data = response.data;
+    return data is Map && data['success'] == true;
+  }
+
+  Future<bool> resetPassword({
+    required String identifier,
+    required String otp,
+    required String newPassword,
+    required String method,
+  }) async {
+    final Dio dio = ApiClient().dio;
+    final Response response = await dio.post('/auth/forgot-password/reset', data: {
+      'identifier': identifier,
+      'otp': otp,
+      'newPassword': newPassword,
+      'method': method,
+    });
+
+    final data = response.data;
+    return data is Map && data['success'] == true;
+  }
 }
 
 

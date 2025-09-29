@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:io' show Platform; // For Apple sign-in platform check
-import 'package:mfolks_app/pages/homepage.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:mfolks_app/pages/verify_otp_page.dart';
 import 'package:flutter/material.dart';
 import '../widget/custom_header.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import '../services/signup_service.dart';
+import '../widget/social_auth_buttons.dart';
+// Removed direct Google/Apple SDK flows in favor of server-driven social auth
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -25,9 +24,18 @@ class _SignupPageState extends State<SignupPage> {
       TextEditingController();
 
   String? _selectedIndustry;
-  final List<String> _industries = ['IT', 'Manufacturing', 'Medical'];
+  List<Map<String, dynamic>> _industries = [];
+  bool _industriesLoading = true;
+  String _industriesError = '';
+  // Social auth is handled via SocialAuthButtons now
+  bool _isSignupLoading = false;
+  String _signupError = '';
 
-  bool _isSocialLoading = false;
+  @override
+  void initState() {
+    super.initState();
+    _fetchIndustries();
+  }
 
   @override
   void dispose() {
@@ -40,99 +48,83 @@ class _SignupPageState extends State<SignupPage> {
     super.dispose();
   }
 
+  Future<void> _fetchIndustries() async {
+    setState(() {
+      _industriesLoading = true;
+      _industriesError = '';
+    });
+    
+    try {
+      final industries = await SignupService.instance.getIndustries();
+      setState(() {
+        _industries = industries;
+        _industriesLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _industriesError = 'Failed to load industries';
+        _industriesLoading = false;
+      });
+    }
+  }
+
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  void _signup() {
-    if (_formKey.currentState!.validate()) {
-      _showSnackBar('Signup Successfully!');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    }
-  }
+  Future<void> _signup() async {
+    if (!_formKey.currentState!.validate()) return;
 
-  Future<void> _googleAuth() async {
-    if (_isSocialLoading) return;
-    setState(() => _isSocialLoading = true);
-    try {
-      // Configure scopes as needed
-      final googleSignIn = GoogleSignIn(scopes: ['email', 'profile']);
-
-      final account = await googleSignIn.signIn();
-      if (account == null) {
-        _showSnackBar('Google sign-in cancelled');
-        return;
-      }
-
-      final auth = await account.authentication;
-      final idToken = auth
-          .idToken; // Send this to your backend to verify and create/login user
-      final accessToken = auth.accessToken;
-
-      if (idToken == null && accessToken == null) {
-        _showSnackBar('Failed to retrieve Google tokens');
-        return;
-      }
-
-      // TODO: Exchange idToken/accessToken with your backend to obtain your app token
-      // Example:
-      // await AuthService.instance.loginWithGoogle(idToken: idToken, accessToken: accessToken);
-
-      _showSnackBar('Google sign-in successful: ${account.email}');
-      // Optionally navigate on success
-      // Navigator.of(context).pushReplacementNamed('/home');
-    } catch (e) {
-      _showSnackBar('Google sign-in error');
-    } finally {
-      if (mounted) setState(() => _isSocialLoading = false);
-    }
-  }
-
-  Future<void> _appleAuth() async {
-    if (_isSocialLoading) return;
-
-    // Apple Sign In is available on iOS/macOS (not on Android/Web)
-    if (kIsWeb || !(Platform.isIOS || Platform.isMacOS)) {
-      _showSnackBar('Apple Sign-In not supported on this platform');
+    if (_selectedIndustry == null) {
+      _showSnackBar('Please select industry');
       return;
     }
 
-    setState(() => _isSocialLoading = true);
+    final String fullname = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}'.trim();
+    if (fullname.isEmpty) {
+      _showSnackBar('Full name is required');
+      return;
+    }
+
+    setState(() {
+      _isSignupLoading = true;
+      _signupError = '';
+    });
+
     try {
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
+      final response = await SignupService.instance.register(
+        fullname: fullname,
+        email: _emailController.text.trim(),
+        phone: _numberController.text.trim(),
+        countryCode: 91,
+        password: _passwordController.text,
+        industryId: int.tryParse(_selectedIndustry!) ?? 0,
       );
 
-      final identityToken = credential.identityToken; // JWT from Apple
-      final authorizationCode =
-          credential.authorizationCode; // Short-lived code
+      if (!mounted) return;
 
-      if (identityToken == null && authorizationCode.isEmpty) {
-        _showSnackBar('Failed to retrieve Apple credentials');
+      if (response['error'] != null) {
+        setState(() => _signupError = response['error'].toString());
+        _showSnackBar(_signupError);
         return;
       }
 
-      // TODO: Send identityToken/authorizationCode to your backend to verify and create/login user
-      // Example:
-      // await AuthService.instance.loginWithApple(identityToken: identityToken, authorizationCode: authorizationCode);
-
-      _showSnackBar('Apple sign-in successful');
-      // Optionally navigate on success
-      // Navigator.of(context).pushReplacementNamed('/home');
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const VerifyOtpPage(),
+        ),
+      );
     } catch (e) {
-      _showSnackBar('Apple sign-in error');
+      setState(() => _signupError = 'Signup failed');
+      _showSnackBar(_signupError);
     } finally {
-      if (mounted) setState(() => _isSocialLoading = false);
+      if (mounted) setState(() => _isSignupLoading = false);
     }
   }
+
+  // Social auth handled by SocialAuthButtons component
 
   void _navigateToLogin() {
     Navigator.of(
@@ -289,20 +281,35 @@ class _SignupPageState extends State<SignupPage> {
                                 ),
                                 items: _industries
                                     .map(
-                                      (industry) => DropdownMenuItem(
-                                        value: industry,
-                                        child: Text(industry),
+                                      (industry) => DropdownMenuItem<String>(
+                                        value: (industry['id'] ?? '').toString(),
+                                        child: Text((industry['name'] ?? '').toString()),
                                       ),
                                     )
                                     .toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _selectedIndustry = value;
-                                  });
-                                },
+                                onChanged: _industriesLoading
+                                    ? null
+                                    : (value) {
+                                        setState(() {
+                                          _selectedIndustry = value;
+                                        });
+                                      },
                                 validator: (value) =>
                                     value == null ? 'Select industry' : null,
                               ),
+                              if (_industriesLoading)
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 8.0),
+                                  child: LinearProgressIndicator(minHeight: 2),
+                                ),
+                              if (_industriesError.isNotEmpty)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                    _industriesError,
+                                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                                  ),
+                                ),
                               const SizedBox(height: 12),
                               TextFormField(
                                 controller: _passwordController,
@@ -349,7 +356,7 @@ class _SignupPageState extends State<SignupPage> {
                                     ),
                                     elevation: 3,
                                   ),
-                                  onPressed: _signup,
+                                  onPressed: _isSignupLoading ? null : _signup,
                                   child: const Text(
                                     'Sign Up',
                                     style: TextStyle(
@@ -415,57 +422,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   const SizedBox(height: 25),
 
-                  // Social buttons
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: _isSocialLoading ? null : _googleAuth,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.teal.withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.g_mobiledata,
-                            size: 28,
-                            color: Color(0xFF00695C),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      GestureDetector(
-                        onTap: _isSocialLoading ? null : _appleAuth,
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.teal.withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.apple,
-                            size: 28,
-                            color: Color(0xFF00695C),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  const SocialAuthButtons(),
 
                   const SizedBox(height: 30),
 

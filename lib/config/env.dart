@@ -13,7 +13,7 @@ class EnvConfig {
 
   static const String googleClientId = String.fromEnvironment(
     'GOOGLE_CLIENT_ID',
-    defaultValue: '117248309973-pfgi9n3gf7j18k6kj321vl9efc68d5ga.apps.googleusercontent.com',
+    defaultValue: '117248309973-b2nlgopv3ehril2kt63oqqq2dl3banol.apps.googleusercontent.com',
   );
 
   static const String appleClientId = String.fromEnvironment(

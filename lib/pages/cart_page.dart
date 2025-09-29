@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import '../widget/custom_header.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../components/app_scaffold.dart';
 import '../services/api_client.dart';
 import '../utils/cloudinary.dart';
+import '../state/cart_provider.dart';
 
 class CartItemModel {
   final int id;
@@ -22,14 +24,14 @@ class CartItemModel {
   }
 }
 
-class CartPage extends StatefulWidget {
+class CartPage extends ConsumerStatefulWidget {
   const CartPage({super.key});
 
   @override
-  State<CartPage> createState() => _CartPageState();
+  ConsumerState<CartPage> createState() => _CartPageState();
 }
 
-class _CartPageState extends State<CartPage> {
+class _CartPageState extends ConsumerState<CartPage> {
   bool loading = true;
   String? error;
   List<CartItemModel> items = [];
@@ -39,42 +41,10 @@ class _CartPageState extends State<CartPage> {
   @override
   void initState() {
     super.initState();
-    _load();
+    Future.microtask(() => ref.read(cartProvider.notifier).loadIfNeeded());
   }
 
-  Future<void> _load() async {
-    setState(() {
-      loading = true;
-      error = null;
-    });
-    try {
-      final res = await ApiClient().get('/carts');
-      final data = res.data;
-      List<CartItemModel> parsed = [];
-      if (data is List) {
-        parsed = data
-            .whereType<Map<String, dynamic>>()
-            .map(CartItemModel.fromJson)
-            .toList();
-      } else if (data is Map && data['items'] is List) {
-        parsed = (data['items'] as List)
-            .whereType<Map<String, dynamic>>()
-            .map(CartItemModel.fromJson)
-            .toList();
-      }
-      setState(() {
-        items = parsed;
-      });
-    } catch (e) {
-      setState(() {
-        error = 'Failed to load cart';
-      });
-    } finally {
-      setState(() {
-        loading = false;
-      });
-    }
-  }
+  // Loading handled via cartProvider
 
   Future<void> _updateQty(int itemId, int quantity) async {
     if (quantity < 1) return;
@@ -84,7 +54,7 @@ class _CartPageState extends State<CartPage> {
         '/carts/items/$itemId',
         data: {'quantity': quantity},
       );
-      await _load();
+      if (mounted) ref.read(cartProvider.notifier).reload();
     } catch (_) {
     } finally {
       setState(() => updating.remove(itemId));
@@ -95,21 +65,14 @@ class _CartPageState extends State<CartPage> {
     setState(() => removing.add(itemId));
     try {
       await ApiClient().post('/carts/items/$itemId/delete');
-      await _load();
+      if (mounted) ref.read(cartProvider.notifier).reload();
     } catch (_) {
     } finally {
       setState(() => removing.remove(itemId));
     }
   }
 
-  Future<void> _clear() async {
-    try {
-      await ApiClient().post('/carts/clear');
-      await _load();
-    } catch (_) {}
-  }
-
-  double _getTotal() {
+  double _getCartTotal(List<CartItemModel> items) {
     double total = 0;
     for (final item in items) {
       final price = (item.product['price'] as num?)?.toDouble() ?? 0;
@@ -118,36 +81,34 @@ class _CartPageState extends State<CartPage> {
     return total;
   }
 
+  // Totals computed via helper using provider items
+
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return const Scaffold(
-        appBar: const CustomHeader(isHome: false),
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-    if (error != null) {
-      return Scaffold(
-        appBar: const CustomHeader(isHome: false),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(error!),
-              const SizedBox(height: 8),
-              OutlinedButton(onPressed: _load, child: const Text('Retry')),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final isEmpty = items.isEmpty;
-    return Scaffold(
-      appBar: const CustomHeader(isHome: false),
+    final cartState = ref.watch(cartProvider);
+    final isEmpty = cartState.items.isEmpty;
+    return AppScaffold(
+      isHomeHeader: false,
+      currentIndex: 2,
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: isEmpty
+        child: cartState.loading
+            ? const Center(child: CircularProgressIndicator())
+            : cartState.error != null
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(cartState.error!),
+                        const SizedBox(height: 8),
+                        OutlinedButton(
+                          onPressed: () => ref.read(cartProvider.notifier).reload(),
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  )
+                : isEmpty
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -160,14 +121,14 @@ class _CartPageState extends State<CartPage> {
                   ),
                 ],
               )
-            : Column(
+              : Column(
                 children: [
                   Expanded(
                     child: ListView.separated(
-                      itemCount: items.length,
+                      itemCount: cartState.items.length,
                       separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (context, i) {
-                        final item = items[i];
+                        final item = cartState.items[i];
                         final p = item.product;
                         final name = (p['name'] as String?) ?? 'Product';
                         final desc = (p['description'] as String?) ?? '';
@@ -295,7 +256,7 @@ class _CartPageState extends State<CartPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text('Subtotal'),
-                            Text('₹${_getTotal().toStringAsFixed(2)}'),
+                            Text('₹${_getCartTotal(cartState.items).toStringAsFixed(2)}'),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -303,7 +264,7 @@ class _CartPageState extends State<CartPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text('Tax (8%)'),
-                            Text('₹${(_getTotal() * 0.08).toStringAsFixed(2)}'),
+                            Text('₹${(_getCartTotal(cartState.items) * 0.08).toStringAsFixed(2)}'),
                           ],
                         ),
                         const Divider(height: 20),
@@ -314,12 +275,7 @@ class _CartPageState extends State<CartPage> {
                               'Total',
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
-                            Text(
-                              '₹${(_getTotal() * 1.08).toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                            Text('₹${(_getCartTotal(cartState.items) * 1.08).toStringAsFixed(2)}', style: const TextStyle(fontWeight: FontWeight.bold)),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -327,7 +283,10 @@ class _CartPageState extends State<CartPage> {
                           children: [
                             Expanded(
                               child: OutlinedButton(
-                                onPressed: _clear,
+                                onPressed: () async {
+                                  await ApiClient().post('/carts/clear');
+                                  if (mounted) ref.read(cartProvider.notifier).reload();
+                                },
                                 child: const Text('Clear Cart'),
                               ),
                             ),
