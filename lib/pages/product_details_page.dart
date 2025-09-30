@@ -108,6 +108,33 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       );
     }
 
+    // Determine display name and asset override regardless of cloud image
+    final String originalName = product!.name;
+    String displayName = originalName;
+    String fallbackAsset = 'assets/mfolks-logo.png';
+    bool overrideAsset = false;
+    final String lname = originalName.toLowerCase();
+
+    // Metal rod → Polymer
+    if ((lname.contains('metal') && lname.contains('rod')) ||
+        lname.contains('metal rod')) {
+      displayName = 'Polymer';
+      fallbackAsset = 'assets/polymers.png';
+      overrideAsset = true;
+    }
+    // Copper/Cooper wire → copper.png
+    else if ((lname.contains('copper') || lname.contains('cooper')) &&
+        lname.contains('wire')) {
+      fallbackAsset = 'assets/copper.png';
+      overrideAsset = true;
+    }
+    // Aluminium/Aluminum sheet or wire → aluminium.jpg
+    else if ((lname.contains('aluminium') || lname.contains('aluminum')) &&
+        (lname.contains('sheet') || lname.contains('wire'))) {
+      fallbackAsset = 'assets/aluminium.jpg';
+      overrideAsset = true;
+    }
+
     return Scaffold(
       appBar: const CustomHeader(isHome: false),
       body: SingleChildScrollView(
@@ -117,18 +144,32 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                product!.imagePublicId.isNotEmpty
-                    ? CloudinaryUtils.getCloudinaryUrl(product!.imagePublicId)
-                    : 'https://via.placeholder.com/600x300.png?text=Product',
-                height: 220,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+              child: overrideAsset
+                  ? Image.asset(
+                      fallbackAsset,
+                      height: 220,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    )
+                  : (product!.imagePublicId.isNotEmpty
+                        ? Image.network(
+                            CloudinaryUtils.getCloudinaryUrl(
+                              product!.imagePublicId,
+                            ),
+                            height: 220,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            fallbackAsset,
+                            height: 220,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          )),
             ),
             const SizedBox(height: 16),
             Text(
-              product!.name,
+              displayName,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,

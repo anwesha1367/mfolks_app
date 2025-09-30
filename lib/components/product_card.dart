@@ -18,6 +18,33 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Determine display name and override asset based on product name
+    final String originalName = product.name;
+    String displayName = originalName;
+    String fallbackAsset = 'assets/mfolks-logo.png';
+    bool overrideAsset = false;
+    final String lname = originalName.toLowerCase();
+
+    // Metal rod → Polymer
+    if ((lname.contains('metal') && lname.contains('rod')) ||
+        lname.contains('metal rod')) {
+      displayName = 'Polymer';
+      fallbackAsset = 'assets/polymers.png';
+      overrideAsset = true;
+    }
+    // Copper/Cooper wire → copper.png
+    else if ((lname.contains('copper') || lname.contains('cooper')) &&
+        lname.contains('wire')) {
+      fallbackAsset = 'assets/copper.png';
+      overrideAsset = true;
+    }
+    // Aluminium/Aluminum sheet or wire → aluminium.png
+    else if ((lname.contains('aluminium') || lname.contains('aluminum')) &&
+        (lname.contains('sheet') || lname.contains('wire'))) {
+      fallbackAsset = 'assets/aluminium.jpg';
+      overrideAsset = true;
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -45,19 +72,23 @@ class ProductCard extends StatelessWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  product.imagePublicId.isNotEmpty
-                      ? CloudinaryUtils.getCloudinaryUrl(product.imagePublicId)
-                      : 'https://via.placeholder.com/100x80.png?text=Product',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(
-                      Icons.category,
-                      color: Color(0xFF00695C),
-                      size: 40,
-                    );
-                  },
-                ),
+                child: overrideAsset
+                    ? Image.asset(fallbackAsset, fit: BoxFit.cover)
+                    : (product.imagePublicId.isNotEmpty
+                          ? Image.network(
+                              CloudinaryUtils.getCloudinaryUrl(
+                                product.imagePublicId,
+                              ),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(
+                                  Icons.category,
+                                  color: Color(0xFF00695C),
+                                  size: 40,
+                                );
+                              },
+                            )
+                          : Image.asset(fallbackAsset, fit: BoxFit.cover)),
               ),
             ),
             const SizedBox(width: 16),
@@ -66,7 +97,7 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    product.name,
+                    displayName,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -79,7 +110,9 @@ class ProductCard extends StatelessWidget {
                   Row(
                     children: [
                       Icon(
-                        product.isInStock ? Icons.check_circle : Icons.error_outline,
+                        product.isInStock
+                            ? Icons.check_circle
+                            : Icons.error_outline,
                         color: product.isInStock ? Colors.green : Colors.red,
                         size: 16,
                       ),
@@ -119,10 +152,7 @@ class ProductCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      TextButton(
-                        onPressed: onView,
-                        child: const Text('View'),
-                      ),
+                      TextButton(onPressed: onView, child: const Text('View')),
                       const SizedBox(width: 8),
                       ElevatedButton(
                         onPressed: isAdding ? null : onAddToCart,
@@ -155,5 +185,3 @@ class ProductCard extends StatelessWidget {
     );
   }
 }
-
-

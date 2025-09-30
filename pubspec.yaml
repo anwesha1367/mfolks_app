@@ -67,6 +67,10 @@ flutter:
   assets:
     - assets/mfolks-logo.png
     - assets/mfolks-logo-1.png
+    - assets/nickel.jpg
+    - assets/copper.png
+    - assets/aluminium.jpg
+    - assets/polymers.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
