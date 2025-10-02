@@ -22,52 +22,6 @@ class _HomePageState extends ConsumerState<HomePage> {
   late List<Product> products;
   int? _addingId;
 
-  // Local sample products to display more items by default
-  List<Product> _localSampleProducts() {
-    return [
-      Product(
-        id: -1,
-        name: 'Aluminium Wire',
-        description:
-            'High-quality aluminium wire suitable for various applications.',
-        imagePublicId: '', // Empty to use placeholder image
-        totalStock: 120,
-        isInStock: true,
-        availableLots: 8,
-      ),
-      Product(
-        id: -2,
-        name: 'Copper Wire',
-        description:
-            'Durable copper wire ideal for electrical and industrial uses.',
-        imagePublicId: '',
-        totalStock: 75,
-        isInStock: true,
-        availableLots: 5,
-      ),
-      Product(
-        id: -3,
-        name: 'Aluminium Coil',
-        description:
-            'Premium aluminium coil with excellent corrosion resistance.',
-        imagePublicId: '',
-        totalStock: 45,
-        isInStock: true,
-        availableLots: 3,
-      ),
-      Product(
-        id: -4,
-        name: 'Brass Wire',
-        description:
-            'Versatile brass wire for manufacturing and craft applications.',
-        imagePublicId: '',
-        totalStock: 60,
-        isInStock: true,
-        availableLots: 4,
-      ),
-    ];
-  }
-
   @override
   void initState() {
     super.initState();
@@ -84,7 +38,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           .toList();
       if (mounted) {
         setState(() {
-          products = [...list, ..._localSampleProducts()];
+          products = list;
         });
       }
     } catch (_) {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widget/custom_footer.dart';
-import '../widget/custom_header.dart';
+import '../components/app_scaffold.dart';
 
 class FeedbackPage extends StatefulWidget {
   const FeedbackPage({super.key});
@@ -10,32 +9,10 @@ class FeedbackPage extends StatefulWidget {
 }
 
 class _FeedbackPageState extends State<FeedbackPage> {
-  int _selectedIndex = 2; // keep Home highlighted to match footer pattern
   int _rating = 4;
   final TextEditingController _feedbackController = TextEditingController();
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, "/about");
-        break;
-      case 1:
-        Navigator.pushNamed(context, "/quote");
-        break;
-      case 2:
-        Navigator.pushNamed(context, "/home");
-        break;
-      case 3:
-        Navigator.pushNamed(context, "/analytics");
-        break;
-      case 4:
-        Navigator.pushNamed(context, "/calculator");
-        break;
-    }
-  }
+  // Navigation handled by AppScaffold; we only keep selected index for highlighting
 
   void _showSuccessDialog() {
     showDialog(
@@ -138,9 +115,9 @@ class _FeedbackPageState extends State<FeedbackPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8FFFE),
-      appBar: const CustomHeader(isHome: false),
+    return AppScaffold(
+      isHomeHeader: false,
+      currentIndex: 1,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -227,10 +204,6 @@ class _FeedbackPageState extends State<FeedbackPage> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: CustomFooter(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
       ),
     );
   }
